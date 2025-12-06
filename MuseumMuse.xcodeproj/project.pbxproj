@@ -24,9 +24,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		990B37FE2EE3DDDD007B89BF /* MetaMuseumGuide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MetaMuseumGuide.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		990B380E2EE3DDDE007B89BF /* MetaMuseumGuideTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MetaMuseumGuideTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		990B38182EE3DDDE007B89BF /* MetaMuseumGuideUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MetaMuseumGuideUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		990B37FE2EE3DDDD007B89BF /* I.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = I.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		990B380E2EE3DDDE007B89BF /* ITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		990B38182EE3DDDE007B89BF /* IUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -85,9 +85,9 @@
 		990B37FF2EE3DDDD007B89BF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				990B37FE2EE3DDDD007B89BF /* MetaMuseumGuide.app */,
-				990B380E2EE3DDDE007B89BF /* MetaMuseumGuideTests.xctest */,
-				990B38182EE3DDDE007B89BF /* MetaMuseumGuideUITests.xctest */,
+				990B37FE2EE3DDDD007B89BF /* I.app */,
+				990B380E2EE3DDDE007B89BF /* ITests.xctest */,
+				990B38182EE3DDDE007B89BF /* IUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,9 +95,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		990B37FD2EE3DDDD007B89BF /* MetaMuseumGuide */ = {
+		990B37FD2EE3DDDD007B89BF /* I */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 990B38222EE3DDDE007B89BF /* Build configuration list for PBXNativeTarget "MetaMuseumGuide" */;
+			buildConfigurationList = 990B38222EE3DDDE007B89BF /* Build configuration list for PBXNativeTarget "I" */;
 			buildPhases = (
 				990B37FA2EE3DDDD007B89BF /* Sources */,
 				990B37FB2EE3DDDD007B89BF /* Frameworks */,
@@ -110,16 +110,16 @@
 			fileSystemSynchronizedGroups = (
 				990B38002EE3DDDD007B89BF /* MetaMuseumGuide */,
 			);
-			name = MetaMuseumGuide;
+			name = I;
 			packageProductDependencies = (
 			);
 			productName = MetaMuseumGuide;
-			productReference = 990B37FE2EE3DDDD007B89BF /* MetaMuseumGuide.app */;
+			productReference = 990B37FE2EE3DDDD007B89BF /* I.app */;
 			productType = "com.apple.product-type.application";
 		};
-		990B380D2EE3DDDE007B89BF /* MetaMuseumGuideTests */ = {
+		990B380D2EE3DDDE007B89BF /* ITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 990B38252EE3DDDE007B89BF /* Build configuration list for PBXNativeTarget "MetaMuseumGuideTests" */;
+			buildConfigurationList = 990B38252EE3DDDE007B89BF /* Build configuration list for PBXNativeTarget "ITests" */;
 			buildPhases = (
 				990B380A2EE3DDDE007B89BF /* Sources */,
 				990B380B2EE3DDDE007B89BF /* Frameworks */,
@@ -133,16 +133,16 @@
 			fileSystemSynchronizedGroups = (
 				990B38112EE3DDDE007B89BF /* MetaMuseumGuideTests */,
 			);
-			name = MetaMuseumGuideTests;
+			name = ITests;
 			packageProductDependencies = (
 			);
 			productName = MetaMuseumGuideTests;
-			productReference = 990B380E2EE3DDDE007B89BF /* MetaMuseumGuideTests.xctest */;
+			productReference = 990B380E2EE3DDDE007B89BF /* ITests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		990B38172EE3DDDE007B89BF /* MetaMuseumGuideUITests */ = {
+		990B38172EE3DDDE007B89BF /* IUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 990B38282EE3DDDE007B89BF /* Build configuration list for PBXNativeTarget "MetaMuseumGuideUITests" */;
+			buildConfigurationList = 990B38282EE3DDDE007B89BF /* Build configuration list for PBXNativeTarget "IUITests" */;
 			buildPhases = (
 				990B38142EE3DDDE007B89BF /* Sources */,
 				990B38152EE3DDDE007B89BF /* Frameworks */,
@@ -156,11 +156,11 @@
 			fileSystemSynchronizedGroups = (
 				990B381B2EE3DDDE007B89BF /* MetaMuseumGuideUITests */,
 			);
-			name = MetaMuseumGuideUITests;
+			name = IUITests;
 			packageProductDependencies = (
 			);
 			productName = MetaMuseumGuideUITests;
-			productReference = 990B38182EE3DDDE007B89BF /* MetaMuseumGuideUITests.xctest */;
+			productReference = 990B38182EE3DDDE007B89BF /* IUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -186,7 +186,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 990B37F92EE3DDDD007B89BF /* Build configuration list for PBXProject "MetaMuseumGuide" */;
+			buildConfigurationList = 990B37F92EE3DDDD007B89BF /* Build configuration list for PBXProject "I" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -195,14 +195,17 @@
 			);
 			mainGroup = 990B37F52EE3DDDD007B89BF;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				990B38502EE3E21A007B89BF /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 990B37FF2EE3DDDD007B89BF /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				990B37FD2EE3DDDD007B89BF /* MetaMuseumGuide */,
-				990B380D2EE3DDDE007B89BF /* MetaMuseumGuideTests */,
-				990B38172EE3DDDE007B89BF /* MetaMuseumGuideUITests */,
+				990B37FD2EE3DDDD007B89BF /* I */,
+				990B380D2EE3DDDE007B89BF /* ITests */,
+				990B38172EE3DDDE007B89BF /* IUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -258,12 +261,12 @@
 /* Begin PBXTargetDependency section */
 		990B38102EE3DDDE007B89BF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 990B37FD2EE3DDDD007B89BF /* MetaMuseumGuide */;
+			target = 990B37FD2EE3DDDD007B89BF /* I */;
 			targetProxy = 990B380F2EE3DDDE007B89BF /* PBXContainerItemProxy */;
 		};
 		990B381A2EE3DDDE007B89BF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 990B37FD2EE3DDDD007B89BF /* MetaMuseumGuide */;
+			target = 990B37FD2EE3DDDD007B89BF /* I */;
 			targetProxy = 990B38192EE3DDDE007B89BF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -399,6 +402,7 @@
 				DEVELOPMENT_TEAM = UQ27N5CJJ6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Yes;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -428,6 +432,7 @@
 				DEVELOPMENT_TEAM = UQ27N5CJJ6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Yes;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -461,7 +466,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MetaMuseumGuide.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MetaMuseumGuide";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/I.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/I";
 			};
 			name = Debug;
 		};
@@ -480,7 +485,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MetaMuseumGuide.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MetaMuseumGuide";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/I.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/I";
 			};
 			name = Release;
 		};
@@ -521,7 +526,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		990B37F92EE3DDDD007B89BF /* Build configuration list for PBXProject "MetaMuseumGuide" */ = {
+		990B37F92EE3DDDD007B89BF /* Build configuration list for PBXProject "I" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				990B38202EE3DDDE007B89BF /* Debug */,
@@ -530,7 +535,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		990B38222EE3DDDE007B89BF /* Build configuration list for PBXNativeTarget "MetaMuseumGuide" */ = {
+		990B38222EE3DDDE007B89BF /* Build configuration list for PBXNativeTarget "I" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				990B38232EE3DDDE007B89BF /* Debug */,
@@ -539,7 +544,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		990B38252EE3DDDE007B89BF /* Build configuration list for PBXNativeTarget "MetaMuseumGuideTests" */ = {
+		990B38252EE3DDDE007B89BF /* Build configuration list for PBXNativeTarget "ITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				990B38262EE3DDDE007B89BF /* Debug */,
@@ -548,7 +553,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		990B38282EE3DDDE007B89BF /* Build configuration list for PBXNativeTarget "MetaMuseumGuideUITests" */ = {
+		990B38282EE3DDDE007B89BF /* Build configuration list for PBXNativeTarget "IUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				990B38292EE3DDDE007B89BF /* Debug */,
@@ -558,6 +563,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		990B38502EE3E21A007B89BF /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/facebook/meta-wearables-dat-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.2.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 990B37F62EE3DDDD007B89BF /* Project object */;
 }
