@@ -29,9 +29,22 @@
 		990B38182EE3DDDE007B89BF /* MuseumMuseUMuseumMuseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MuseumMuseUMuseumMuseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		990B38672EE5111E007B89BF /* Exceptions for "MetaMuseumGuide" folder in "MuseumMuse" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 990B37FD2EE3DDDD007B89BF /* MuseumMuse */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		990B38002EE3DDDD007B89BF /* MetaMuseumGuide */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				990B38672EE5111E007B89BF /* Exceptions for "MetaMuseumGuide" folder in "MuseumMuse" target */,
+			);
 			path = MetaMuseumGuide;
 			sourceTree = "<group>";
 		};
@@ -401,8 +414,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"MetaMuseumGuide/Preview Content\"";
 				DEVELOPMENT_TEAM = UQ27N5CJJ6;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Yes;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MetaMuseumGuide/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -431,8 +444,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"MetaMuseumGuide/Preview Content\"";
 				DEVELOPMENT_TEAM = UQ27N5CJJ6;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Yes;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MetaMuseumGuide/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

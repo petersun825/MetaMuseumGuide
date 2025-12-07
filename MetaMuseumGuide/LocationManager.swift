@@ -10,17 +10,9 @@ import CoreLocation
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
     
-    @Published var currentMuseum: String? = nil
+    @Published var currentMuseum: Museum? = nil
+    @Published var recommendations: [Exhibit] = []
     @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
-    
-    // Hardcoded list of museums for demo
-    private let museums: [String: (lat: Double, long: Double)] = [
-        "The Met": (40.7794, -73.9632),
-        "MoMA": (40.7614, -73.9776),
-        "Louvre": (48.8606, 2.3376),
-        "British Museum": (51.5194, -0.1270),
-        "Museum of Fine Art Boston": (42.3588, -71.0561)
-    ]
     
     override init() {
         super.init()
@@ -46,11 +38,14 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     private func checkMuseum(at location: CLLocation) {
         // Simple distance check (e.g., within 500 meters)
-        for (name, coords) in museums {
-            let museumLocation = CLLocation(latitude: coords.lat, longitude: coords.long)
+        for (_, museum) in MuseumData.museums {
+            let museumLocation = CLLocation(latitude: museum.latitude, longitude: museum.longitude)
             if location.distance(from: museumLocation) < 500 {
                 DispatchQueue.main.async {
-                    self.currentMuseum = name
+                    if self.currentMuseum?.name != museum.name {
+                        self.currentMuseum = museum
+                        // Recommendations will be updated by the view or a separate method observing preferences
+                    }
                 }
                 return
             }
@@ -58,7 +53,35 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         // If no match found
         DispatchQueue.main.async {
             self.currentMuseum = nil
+            self.recommendations = []
+        }
+    }
+    
+    func updateRecommendations(for preferences: UserPreferences) {
+        guard let museum = currentMuseum else {
+            recommendations = []
+            return
+        }
+        
+        if preferences.interests.isEmpty {
+            // If no preferences, show all or top exhibits
+            recommendations = museum.exhibits
+        } else {
+            // Filter exhibits that match at least one interest tag
+            recommendations = museum.exhibits.filter { exhibit in
+                !exhibit.tags.isDisjoint(with: preferences.interests)
+            }
+            // If no matches, fallback to showing all
+            if recommendations.isEmpty {
+                recommendations = museum.exhibits
+            }
+        }
+    }
+    
+    // Debug method to simulate location
+    func simulateLocation(museumName: String) {
+        if let museum = MuseumData.museums[museumName] {
+            self.currentMuseum = museum
         }
     }
 }
-
