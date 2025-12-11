@@ -12,8 +12,8 @@ class UserPreferences: ObservableObject {
             save()
         }
     }
-    
-    @Published var openAIKey: String = "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"
+    @Published var geminiAPIKey: String = "AIzaSyAn_-DZxMcTiUwFsWZNRrtS1V_m0V9MhWk"
+//    @Published var openAIKey: String = ""
     //api key 12/7/25 museum
     
     // Available interest tags
@@ -28,23 +28,37 @@ class UserPreferences: ObservableObject {
     
     init() {
         // Trim whitespace from the hardcoded key to prevent copy-paste errors
-        openAIKey = openAIKey.trimmingCharacters(in: .whitespacesAndNewlines)
-        // Debug: Print the key being used (masked)
-        if !openAIKey.isEmpty {
-            let keyLength = openAIKey.count
-            let prefix = String(openAIKey.prefix(8))
-            let suffix = String(openAIKey.suffix(4))
-            print("UserPreferences: Using API Key: \(prefix)...\(suffix) (Length: \(keyLength))")
-            // Deep Debug: Print first 10 bytes to check for hidden characters
-            let bytes = openAIKey.prefix(10).utf8.map { String($0) }.joined(separator: ", ")
-            print("UserPreferences: Key Bytes (first 10): [\(bytes)]")
-            
-        } else {
-                    print("UserPreferences: API Key is empty")
-                }
-       
-           
+//        openAIKey = openAIKey.trimmingCharacters(in: .whitespacesAndNewlines)
+//        // Debug: Print the key being used (masked)
+//        if !openAIKey.isEmpty {
+//            let keyLength = openAIKey.count
+//            let prefix = String(openAIKey.prefix(8))
+//            let suffix = String(openAIKey.suffix(4))
+//            print("UserPreferences: Using API Key: \(prefix)...\(suffix) (Length: \(keyLength))")
+//            // Deep Debug: Print first 10 bytes to check for hidden characters
+//            let bytes = openAIKey.prefix(10).utf8.map { String($0) }.joined(separator: ", ")
+//            print("UserPreferences: Key Bytes (first 10): [\(bytes)]")
+//            
+//        } else {
+//                    print("UserPreferences: API Key is empty")
+//                }
+        geminiAPIKey = geminiAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)
                
+               // Debug: Print the key being used (masked)
+               if !geminiAPIKey.isEmpty {
+                   let keyLength = geminiAPIKey.count
+                   let prefix = String(geminiAPIKey.prefix(8))
+                   let suffix = String(geminiAPIKey.suffix(4))
+                   print("UserPreferences: Using Gemini Key: \(prefix)...\(suffix) (Length: \(keyLength))")
+                   
+                   // Deep Debug: Print first 10 bytes to check for hidden characters
+                   let bytes = geminiAPIKey.prefix(10).utf8.map { String($0) }.joined(separator: ", ")
+                   print("UserPreferences: Key Bytes (first 10): [\(bytes)]")
+               } else {
+                   print("UserPreferences: Gemini Key is empty")
+               }
+               
+           
         load()
     }
     

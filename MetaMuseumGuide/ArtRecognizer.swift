@@ -22,18 +22,18 @@ struct ArtPiece: Identifiable {
 }
 
 class OpenAIArtRecognizer: ArtRecognizerService {
-    private let openAIService: OpenAIService
+    private let geminiService: GeminiService
     
     init(apiKey: String) {
-        self.openAIService = OpenAIService(apiKey: "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")
+        self.geminiService = GeminiService(apiKey: apiKey)
     }
     
     func recognizeArt(image: UIImage, onPartial: @escaping (ArtPiece) -> Void, onComplete: @escaping (Result<ArtPiece, Error>) -> Void) {
         // 1. Instant Local Recognition (OCR)
         performLocalRecognition(image: image, onPartial: onPartial)
         
-        // 2. Deep OpenAI Analysis
-        openAIService.identifyArt(image: image, completion: onComplete)
+        // 2. Deep Gemini Analysis
+        geminiService.identifyArt(image: image, completion: onComplete)
     }
     
     private func performLocalRecognition(image: UIImage, onPartial: @escaping (ArtPiece) -> Void) {

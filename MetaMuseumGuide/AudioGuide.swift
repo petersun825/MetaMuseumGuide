@@ -7,53 +7,41 @@
 import Foundation
 import AVFoundation
 
-class AudioGuide: NSObject, ObservableObject, AVAudioPlayerDelegate {
-    private var audioPlayer: AVAudioPlayer?
-    private var openAIService: OpenAIService?
+class AudioGuide: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
+    private let synthesizer = AVSpeechSynthesizer()
     
     override init() {
         super.init()
-        // We will inject the service or key later, or init with a default if needed.
-        // For now, we'll rely on the caller to provide the service or key.
+        synthesizer.delegate = self
+        
+        // Configure audio session
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("AudioGuide: Failed to setup audio session - \(error)")
+        }
     }
     
+    // No longer needs API key setup
     func setup(apiKey: String) {
-        self.openAIService = OpenAIService(apiKey: apiKey)
+        // No-op for native TTS
     }
     
     func speak(_ text: String) {
-        guard let service = openAIService else {
-            print("AudioGuide: OpenAIService not initialized. Call setup(apiKey:) first.")
-            return
-        }
+        stop() // Stop any current speech
         
-        service.generateAudio(text: text) { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let data):
-                    self?.playAudio(data: data)
-                case .failure(let error):
-                    print("TTS Error: \(error)")
-                }
-            }
-        }
-    }
-    
-    private func playAudio(data: Data) {
-        do {
-            // Configure audio session to play through system output (which would be the glasses if connected)
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
-            try AVAudioSession.sharedInstance().setActive(true)
-
-            audioPlayer = try AVAudioPlayer(data: data)
-            audioPlayer?.delegate = self
-            audioPlayer?.play()
-        } catch {
-            print("Audio Playback Error: \(error)")
-        }
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        utterance.rate = 0.5
+        utterance.pitchMultiplier = 1.0
+        
+        synthesizer.speak(utterance)
     }
     
     func stop() {
-        audioPlayer?.stop()
+        if synthesizer.isSpeaking {
+            synthesizer.stopSpeaking(at: .immediate)
+        }
     }
 }

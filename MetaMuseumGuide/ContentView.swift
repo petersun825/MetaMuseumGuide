@@ -1,4 +1,5 @@
 import SwiftUI
+import AVFoundation
 
 struct ContentView: View {
     @EnvironmentObject var glassesManager: GlassesManager
@@ -19,11 +20,28 @@ struct ContentView: View {
         NavigationView {
             ZStack {
                 // Background Camera Preview
-                if !cameraService.isSessionRunning {
-                    Color.black.edgesIgnoringSafeArea(.all)
-                } else {
+                // If glasses are connected, we show the "Glasses Feed" (from GlassesManager)
+                // If not, we show the Phone Camera (from CameraService)
+                if glassesManager.isConnected {
+                    CameraPreview(session: glassesManager.glassesSession)
+                        .edgesIgnoringSafeArea(.all)
+                        .overlay(
+                            VStack {
+                                Spacer()
+                                Text("Live View: Ray-Ban Meta")
+                                    .font(.caption)
+                                    .padding(6)
+                                    .background(Color.black.opacity(0.6))
+                                    .cornerRadius(4)
+                                    .foregroundColor(.green)
+                                    .padding(.bottom, 100)
+                            }
+                        )
+                } else if cameraService.isSessionRunning {
                     CameraPreview(session: cameraService.session)
                         .edgesIgnoringSafeArea(.all)
+                } else {
+                    Color.black.edgesIgnoringSafeArea(.all)
                 }
                 
                 // Overlay Content
@@ -33,6 +51,13 @@ struct ContentView: View {
                         Image(systemName: glassesManager.isConnected ? "eyeglasses" : "eyeglasses.slash")
                             .foregroundColor(glassesManager.isConnected ? .green : .white)
                             .font(.largeTitle)
+                            .onTapGesture {
+                                if glassesManager.isConnected {
+                                    glassesManager.disconnect()
+                                } else {
+                                    glassesManager.connect()
+                                }
+                            }
                         
                         VStack(alignment: .leading) {
                             Text("Meta Glasses")
@@ -174,7 +199,7 @@ struct ContentView: View {
                                     ProgressView()
                                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                 } else {
-                                    Image(systemName: "camera.shutter.button.fill")
+                                    Image(systemName: glassesManager.isConnected ? "eyeglasses" : "camera.shutter.button.fill")
                                         .font(.largeTitle)
                                 }
                             }
@@ -210,19 +235,19 @@ struct ContentView: View {
                 locationManager.requestPermission()
                 cameraService.checkPermissions()
                 
-                // Init AudioGuide with key if available
-                if !userPreferences.openAIKey.isEmpty {
-                    audioGuide.setup(apiKey: userPreferences.openAIKey)
-                }
+                // Init AudioGuide (Native TTS doesn't need key, but keeping flow consistent)
+                // if !userPreferences.geminiAPIKey.isEmpty {
+                //    audioGuide.setup(apiKey: userPreferences.geminiAPIKey)
+                // }
             }
-            .onChange(of: userPreferences.openAIKey) { newKey in
-                audioGuide.setup(apiKey: newKey)
+            .onChange(of: userPreferences.geminiAPIKey) { newKey in
+                // audioGuide.setup(apiKey: newKey)
             }
             .alert(item: $cameraService.alertError) { alertError in
                 Alert(title: Text(alertError.title), message: Text(alertError.message), dismissButton: .default(Text("OK")))
             }
             .alert(isPresented: $showAPIKeyAlert) {
-                Alert(title: Text("API Key Missing"), message: Text("Please enter your OpenAI API Key in Settings to use this feature."), dismissButton: .default(Text("OK")))
+                Alert(title: Text("API Key Missing"), message: Text("Please enter your Gemini API Key in UserPreferences.swift to use this feature."), dismissButton: .default(Text("OK")))
             }
             .alert(isPresented: $showRecognitionError) {
                 Alert(title: Text("Recognition Failed"), message: Text(recognitionError?.localizedDescription ?? "Unknown error"), dismissButton: .default(Text("OK")))
@@ -230,25 +255,25 @@ struct ContentView: View {
         }
     }
     
-
+    
     @State private var scanStatus: String = ""
     
     private func scanArt() {
         print("ContentView: scanArt button pressed")
         
         // Create recognizer directly, allowing empty key (supports hardcoded keys in ArtRecognizer)
-        let recognizer = OpenAIArtRecognizer(apiKey: userPreferences.openAIKey)
+        let recognizer = OpenAIArtRecognizer(apiKey: userPreferences.geminiAPIKey)
         
-        if userPreferences.openAIKey.isEmpty {
-            print("ContentView: Warning - API Key in preferences is empty. Attempting scan anyway (assuming hardcoded key).")
+        if userPreferences.geminiAPIKey.isEmpty {
+            print("ContentView: Warning - Gemini API Key in preferences is empty. Attempting scan anyway (assuming hardcoded key).")
         }
         
         print("ContentView: Starting scan...")
         isScanning = true
         scanStatus = "Listening..."
         
-        // Use CameraService to capture photo
-        cameraService.capturePhoto { image, error in
+        // Capture Block
+        let handleCapture: (UIImage?, Error?) -> Void = { image, error in
             guard let image = image else {
                 DispatchQueue.main.async {
                     isScanning = false
@@ -285,6 +310,21 @@ struct ContentView: View {
                     }
                 }
             })
+        }
+        
+        // Route capture based on connection
+        if glassesManager.isConnected {
+            print("ContentView: Capturing from Glasses Stream...")
+            glassesManager.captureImage { image in
+                if let image = image {
+                    handleCapture(image, nil)
+                } else {
+                    handleCapture(nil, NSError(domain: "GlassesManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to capture from glasses"]))
+                }
+            }
+        } else {
+            print("ContentView: Capturing from Phone Camera...")
+            cameraService.capturePhoto(completion: handleCapture)
         }
     }
 }

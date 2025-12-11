@@ -9,23 +9,70 @@ import SwiftUI
 // import MWDATCore
 // import MWDATCamera
 
+import AVFoundation
+
 class GlassesManager: ObservableObject {
     @Published var isConnected: Bool = false
     @Published var connectionStatus: String = "Disconnected"
     
-    // Placeholder for SDK objects
-    // private var device: Device?
-    // private var camera: Camera?
+    // The "Glasses" feed (Simulated using Phone Camera)
+    @Published var glassesSession = AVCaptureSession()
+    private let sessionQueue = DispatchQueue(label: "glasses.session.queue")
+    private var photoOutput = AVCapturePhotoOutput()
     
     func connect() {
-        // SDK Connection Logic would go here
-        // For now, we simulate a connection flow
         connectionStatus = "Searching..."
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.isConnected = true
             self.connectionStatus = "Connected to Ray-Ban Meta"
+            self.startStreaming()
         }
+    }
+    
+    func disconnect() {
+        self.isConnected = false
+        self.connectionStatus = "Disconnected"
+        self.stopStreaming()
+    }
+    
+    private func startStreaming() {
+        // Setup and start the camera session to simulate the glasses feed
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            self.configureSession()
+            if !self.glassesSession.isRunning {
+                self.glassesSession.startRunning()
+            }
+        }
+    }
+    
+    private func stopStreaming() {
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            if self.glassesSession.isRunning {
+                self.glassesSession.stopRunning()
+            }
+        }
+    }
+    
+    private func configureSession() {
+        glassesSession.beginConfiguration()
+        
+        // Input (Phone Camera acting as Glasses Camera)
+        if let videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
+           let videoDeviceInput = try? AVCaptureDeviceInput(device: videoDevice),
+           glassesSession.canAddInput(videoDeviceInput) {
+            glassesSession.addInput(videoDeviceInput)
+        }
+        
+        // Output
+        if glassesSession.canAddOutput(photoOutput) {
+            glassesSession.addOutput(photoOutput)
+            photoOutput.isHighResolutionCaptureEnabled = true
+        }
+        
+        glassesSession.commitConfiguration()
     }
     
     func captureImage(completion: @escaping (UIImage?) -> Void) {
@@ -35,19 +82,34 @@ class GlassesManager: ObservableObject {
             return
         }
         
-        // SDK Capture Logic
-        // In a real app, we would subscribe to the camera stream or request a photo
-        print("Requesting image from glasses...")
+        print("GlassesManager: Capturing image from stream...")
         
-        // Return a mock image for the demo
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            // Create a dummy image or return nil
-            let renderer = UIGraphicsImageRenderer(size: CGSize(width: 100, height: 100))
-            let img = renderer.image { ctx in
-                UIColor.blue.setFill()
-                ctx.fill(CGRect(x: 0, y: 0, width: 100, height: 100))
-            }
-            completion(img)
+        // Capture from the session
+        let settings = AVCapturePhotoSettings()
+        let delegate = PhotoCaptureDelegate { image in
+            completion(image)
+        }
+        // Retain delegate
+        self.currentCaptureDelegate = delegate
+        photoOutput.capturePhoto(with: settings, delegate: delegate)
+    }
+    
+    private var currentCaptureDelegate: PhotoCaptureDelegate?
+}
+
+// Helper Delegate for capturing photo
+class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
+    private let completion: (UIImage?) -> Void
+    
+    init(completion: @escaping (UIImage?) -> Void) {
+        self.completion = completion
+    }
+    
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        if let data = photo.fileDataRepresentation(), let image = UIImage(data: data) {
+            completion(image)
+        } else {
+            completion(nil)
         }
     }
 }
