@@ -59,9 +59,13 @@ class GlassesManager: ObservableObject {
     private func configureSession() {
         glassesSession.beginConfiguration()
         
-        // Input (Phone Camera acting as Glasses Camera)
-        if let videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
-           let videoDeviceInput = try? AVCaptureDeviceInput(device: videoDevice),
+        guard let videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else {
+            glassesSession.commitConfiguration()
+            return
+        }
+        
+        // Input
+        if let videoDeviceInput = try? AVCaptureDeviceInput(device: videoDevice),
            glassesSession.canAddInput(videoDeviceInput) {
             glassesSession.addInput(videoDeviceInput)
         }
@@ -69,7 +73,13 @@ class GlassesManager: ObservableObject {
         // Output
         if glassesSession.canAddOutput(photoOutput) {
             glassesSession.addOutput(photoOutput)
-            photoOutput.isHighResolutionCaptureEnabled = true
+            if #available(iOS 16.0, *) {
+                if let maxDimensions = videoDevice.activeFormat.supportedMaxPhotoDimensions.last {
+                    photoOutput.maxPhotoDimensions = maxDimensions
+                }
+            } else {
+                photoOutput.isHighResolutionCaptureEnabled = true
+            }
         }
         
         glassesSession.commitConfiguration()

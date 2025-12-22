@@ -25,7 +25,11 @@ struct CameraPreview: UIViewRepresentable {
         view.backgroundColor = .black
         view.videoPreviewLayer.session = session
         view.videoPreviewLayer.videoGravity = .resizeAspectFill
-        view.videoPreviewLayer.connection?.videoOrientation = .portrait
+        if #available(iOS 17.0, *) {
+            view.videoPreviewLayer.connection?.videoRotationAngle = 90
+        } else {
+            view.videoPreviewLayer.connection?.videoOrientation = .portrait
+        }
         return view
     }
     
@@ -33,4 +37,3 @@ struct CameraPreview: UIViewRepresentable {
         // No updates needed for the session itself here
     }
 }
-

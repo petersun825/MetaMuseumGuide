@@ -16,6 +16,11 @@ class UserPreferences: ObservableObject {
 //    @Published var openAIKey: String = ""
     //api key 12/7/25 museum
     
+    // ElevenLabs API Key & Voice ID
+       @Published var elevenLabsAPIKey: String = "e3211726eaf941c923b20c4a03ba393e4c53caae7656656df06b691bc7cf39b6"
+       @Published var elevenLabsVoiceID: String = "21m00Tcm4TlvDq8ikWAM" // Default voice "Rachel"
+    
+    
     // Available interest tags
     static let availableInterests = [
         "Modern Art",

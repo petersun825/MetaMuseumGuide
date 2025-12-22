@@ -7,39 +7,47 @@
 import Foundation
 import AVFoundation
 
-class AudioGuide: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
-    private let synthesizer = AVSpeechSynthesizer()
+class AudioGuide: ObservableObject {
+    private var elevenLabsService: ElevenLabsService?
+    private let synthesizer = AVSpeechSynthesizer() // Fallback
     
-    override init() {
-        super.init()
-        synthesizer.delegate = self
+    func setup(apiKey: String, voiceID: String) {
+        // ElevenLabs disabled by user request - reverting to native TTS
+        // self.elevenLabsService = ElevenLabsService(apiKey: apiKey, voiceID: voiceID)
         
-        // Configure audio session
+        // Configure audio session for playback
         do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio, options: .duckOthers)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
             print("AudioGuide: Failed to setup audio session - \(error)")
         }
     }
     
-    // No longer needs API key setup
-    func setup(apiKey: String) {
-        // No-op for native TTS
-    }
-    
     func speak(_ text: String) {
-        stop() // Stop any current speech
-        
+        // Force Native TTS
+        print("AudioGuide: Speaking with Native TTS...")
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
         utterance.rate = 0.5
-        utterance.pitchMultiplier = 1.0
-        
         synthesizer.speak(utterance)
+        
+        /* ElevenLabs Disabled
+        if let elevenLabs = elevenLabsService {
+            print("AudioGuide: Speaking with ElevenLabs...")
+            elevenLabs.speak(text: text)
+        } else {
+            print("AudioGuide: Speaking with Native TTS (Fallback)...")
+            let utterance = AVSpeechUtterance(string: text)
+            utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+            utterance.rate = 0.5
+            synthesizer.speak(utterance)
+        }
+        */
     }
     
     func stop() {
+        elevenLabsService?.stop()
         if synthesizer.isSpeaking {
             synthesizer.stopSpeaking(at: .immediate)
         }

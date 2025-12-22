@@ -6,7 +6,7 @@
 //
 
 import Testing
-@testable import MetaMuseumGuide
+@testable import MuseumMuse
 
 struct MetaMuseumGuideTests {
 

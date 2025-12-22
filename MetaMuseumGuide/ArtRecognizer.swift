@@ -12,13 +12,18 @@ protocol ArtRecognizerService {
     func recognizeArt(image: UIImage, onPartial: @escaping (ArtPiece) -> Void, onComplete: @escaping (Result<ArtPiece, Error>) -> Void)
 }
 
-struct ArtPiece: Identifiable {
-    let id = UUID()
+struct ArtPiece: Identifiable, Codable {
+    var id = UUID()
     let title: String
     let artist: String
     let year: String
     let description: String
     let context: String
+    var imageData: Data? = nil
+    var latitude: Double? = nil
+    var longitude: Double? = nil
+    var date: Date? = nil
+    var locationName: String? = nil
 }
 
 class OpenAIArtRecognizer: ArtRecognizerService {

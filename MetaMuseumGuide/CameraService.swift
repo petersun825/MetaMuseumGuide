@@ -73,7 +73,13 @@ class CameraService: NSObject, ObservableObject {
             // Output
             if self.session.canAddOutput(self.photoOutput) {
                 self.session.addOutput(self.photoOutput)
-                self.photoOutput.isHighResolutionCaptureEnabled = true
+                if #available(iOS 16.0, *) {
+                    if let maxDimensions = videoDevice.activeFormat.supportedMaxPhotoDimensions.last {
+                        self.photoOutput.maxPhotoDimensions = maxDimensions
+                    }
+                } else {
+                    self.photoOutput.isHighResolutionCaptureEnabled = true
+                }
             }
             
             self.session.commitConfiguration()
