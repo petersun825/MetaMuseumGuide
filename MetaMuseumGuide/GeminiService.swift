@@ -4,6 +4,7 @@
 //
 //  Created by Peter Sun on 12/7/25.
 //
+
 import Foundation
 import UIKit
 
@@ -12,14 +13,14 @@ class GeminiService {
     private let session = URLSession.shared
     
     // Gemini 1.5 Flash is fast and multimodal
-    private let model = "gemini-flash-latest"
+    private let model = "gemini-3-flash-preview"
     
     init(apiKey: String) {
         self.apiKey = apiKey
     }
     
     // MARK: - Vision (Identify Art)
-    func identifyArt(image: UIImage, completion: @escaping (Result<ArtPiece, Error>) -> Void) {
+    func identifyArt(image: UIImage, language: String, completion: @escaping (Result<ArtPiece, Error>) -> Void) {
         guard let base64Image = image.jpegData(compressionQuality: 0.5)?.base64EncodedString() else {
             completion(.failure(NSError(domain: "GeminiService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to encode image"])))
             return
@@ -36,8 +37,8 @@ class GeminiService {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let prompt = """
-        Analyze this image. If it is an artwork, identify the Title, Artist, Year, and provide a Description and Context.
-        If it is a general object, identify it and provide context.
+        Analyze this image. If it is an artwork, identify the Title, Artist, Year, and provide a Description and Context in \(language).
+        If it is a general object, identify it and provide context in \(language).
         Return the result as a valid JSON object with the following keys:
         "title", "artist", "year", "description", "context".
         Do not include markdown formatting like ```json. Just the raw JSON.

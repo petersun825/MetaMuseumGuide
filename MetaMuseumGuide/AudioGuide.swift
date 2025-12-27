@@ -24,11 +24,24 @@ class AudioGuide: ObservableObject {
         }
     }
     
-    func speak(_ text: String) {
+    func speak(_ text: String, language: String = "English") {
         // Force Native TTS
         print("AudioGuide: Speaking with Native TTS...")
         let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        
+        let languageCode: String
+        switch language {
+        case "French": languageCode = "fr-FR"
+        case "Spanish": languageCode = "es-ES"
+        case "Italian": languageCode = "it-IT"
+        case "Chinese": languageCode = "zh-CN"
+        case "Japanese": languageCode = "ja-JP"
+        case "German": languageCode = "de-DE"
+        case "Portuguese": languageCode = "pt-PT"
+        default: languageCode = "en-US"
+        }
+        
+        utterance.voice = AVSpeechSynthesisVoice(language: languageCode)
         utterance.rate = 0.5
         synthesizer.speak(utterance)
         

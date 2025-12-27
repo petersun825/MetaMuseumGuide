@@ -15,11 +15,16 @@ struct Exhibit: Identifiable, Hashable {
     let tags: Set<String>
 }
 
-struct Museum {
+struct Museum: Identifiable, Equatable {
+    let id = UUID()
     let name: String
     let latitude: Double
     let longitude: Double
     let exhibits: [Exhibit]
+    
+    static func == (lhs: Museum, rhs: Museum) -> Bool {
+        return lhs.name == rhs.name
+    }
 }
 
 struct MuseumData {
@@ -52,6 +57,15 @@ struct MuseumData {
                 Exhibit(name: "Mona Lisa", description: "Da Vinci's masterpiece.", locationInMuseum: "Denon Wing", tags: ["Classical", "History"]),
                 Exhibit(name: "Venus de Milo", description: "Ancient Greek statue.", locationInMuseum: "Sully Wing", tags: ["Classical", "Sculpture"])
             ]
-        )
+        ),
+        "Harvard Art Museums": Museum(
+                   name: "Harvard Art Museums",
+                   latitude: 42.3744,
+                   longitude: -71.1182,
+                   exhibits: [
+                        Exhibit(name: "Pigment Collection", description: "Rare pigments from around the world.", locationInMuseum: "Level 4", tags: ["History", "Technology"]),
+                        Exhibit(name: "Light and Color", description: "Impressionist studies.", locationInMuseum: "Level 2", tags: ["Impressionism", "Modern Art"])
+                   ]
+               )
     ]
 }

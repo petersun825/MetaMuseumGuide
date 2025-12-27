@@ -64,10 +64,10 @@ struct ContentView: View {
                             }
                         
                         VStack(alignment: .leading) {
-                            Text("Meta Glasses")
+                            Text(userPreferences.localized("Meta Glasses"))
                                 .font(.headline)
                                 .foregroundColor(.white)
-                            Text(glassesManager.connectionStatus)
+                            Text(userPreferences.localized(glassesManager.connectionStatus == "Connected" ? "Connected" : glassesManager.connectionStatus == "Disconnected" ? "Disconnected" : "Connecting..."))
                                 .font(.caption)
                                 .foregroundColor(.white.opacity(0.8))
                         }
@@ -94,7 +94,8 @@ struct ContentView: View {
                         }
                     }
                     .padding()
-                    .background(Color.black.opacity(0.6))
+                    .padding()
+                    .background(.ultraThinMaterial)
                     .cornerRadius(12)
                     .padding(.horizontal)
                     
@@ -104,12 +105,12 @@ struct ContentView: View {
                             HStack {
                                 Image(systemName: "building.columns.fill")
                                     .foregroundColor(.purple)
-                                Text("You are at **\(museum.name)**")
+                                Text("\(userPreferences.localized("You are at")) **\(museum.name)**")
                                     .foregroundColor(.white)
                             }
                             
                             if !locationManager.recommendations.isEmpty {
-                                Text("Recommended for you:")
+                                Text(userPreferences.localized("Recommended for you:"))
                                     .font(.caption)
                                     .foregroundColor(.white.opacity(0.8))
                                 
@@ -134,8 +135,9 @@ struct ContentView: View {
                             }
                         }
                         .padding()
-                        .background(Color.black.opacity(0.6))
-                        .cornerRadius(8)
+                        .padding()
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(12)
                         .padding(.horizontal)
                         .onAppear {
                             locationManager.updateRecommendations(for: userPreferences)
@@ -148,73 +150,16 @@ struct ContentView: View {
                     Spacer()
                     
                     // Art Display (Overlay)
+                    // Art Display (Overlay)
                     if let art = recognizedArt {
-                        ScrollView {
-                            VStack(spacing: 16) {
-                                if let image = capturedImage {
-                                    Image(uiImage: image)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(height: 200)
-                                        .cornerRadius(12)
-                                        .shadow(radius: 5)
-                                }
-                                
-                                Text(art.title)
-                                    .font(.title2)
-                                    .bold()
-                                    .multilineTextAlignment(.center)
-                                
-                                Text(art.artist)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                
-                                Text(art.year)
-                                    .font(.caption)
-                                
-                                // Context Section
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("About this piece")
-                                        .font(.headline)
-                                    Text(art.description)
-                                        .font(.body)
-                                    
-                                    Divider()
-                                    
-                                    Text("Did you know?")
-                                        .font(.headline)
-                                    Text(art.context)
-                                        .font(.body)
-                                        .italic()
-                                }
-                                .padding()
-                                .background(Color(.secondarySystemBackground))
-                                .cornerRadius(12)
-                                
-                                Button(action: {
-                                    audioGuide.speak("This is \(art.title) by \(art.artist). \(art.description). Context: \(art.context)")
-                                }) {
-                                    Label("Listen Guide", systemImage: "speaker.wave.2.fill")
-                                        .padding()
-                                        .background(Color.blue.opacity(0.1))
-                                        .cornerRadius(8)
-                                }
-                                
-                                Button("Close") {
-                                    withAnimation {
-                                        recognizedArt = nil
-                                        capturedImage = nil
-                                    }
-                                }
-                                .padding(.top)
-                            }
-                            .padding()
-                            .background(Color(.systemBackground).opacity(0.95))
-                            .cornerRadius(16)
-                            .shadow(radius: 10)
-                        }
-                        .padding()
-                        .transition(.move(edge: .bottom))
+                        ArtOverlayView(
+                            art: art,
+                            capturedImage: capturedImage,
+                            audioGuide: audioGuide,
+                            userPreferences: userPreferences,
+                            recognizedArt: $recognizedArt,
+                            capturedImageBinding: $capturedImage
+                        )
                     }
                     
                     Spacer()
@@ -260,18 +205,20 @@ struct ContentView: View {
             }
             .sheet(isPresented: $showHistory) {
                 HistoryView(historyManager: historyManager)
+                    .environmentObject(userPreferences)
             }
             .sheet(isPresented: $showMap) {
                 NavigationView {
                     ArtMapView(historyManager: historyManager, locationManager: locationManager)
                         .toolbar {
                             ToolbarItem(placement: .navigationBarTrailing) {
-                                Button("Done") {
+                                Button(userPreferences.localized("Done")) {
                                     showMap = false
                                 }
                             }
                         }
                 }
+                .environmentObject(userPreferences)
             }
             .onAppear {
                 glassesManager.connect()
@@ -314,7 +261,7 @@ struct ContentView: View {
         
         print("ContentView: Starting scan...")
         isScanning = true
-        scanStatus = "Listening..."
+        scanStatus = userPreferences.localized("Listening...")
         
         // Capture Block
         let handleCapture: (UIImage?, Error?) -> Void = { image, error in
@@ -330,10 +277,11 @@ struct ContentView: View {
             
             DispatchQueue.main.async {
                 self.capturedImage = image
-                scanStatus = "Thinking about this artwork..."
+                scanStatus = userPreferences.localized("Thinking about this artwork...")
             }
             
-            recognizer.recognizeArt(image: image, onPartial: { partialArt in
+            
+            recognizer.recognizeArt(image: image, language: userPreferences.selectedLanguage, onPartial: { partialArt in
                 // Show instant feedback
                 withAnimation {
                     self.recognizedArt = partialArt
@@ -365,8 +313,9 @@ struct ContentView: View {
                         art.date = Date()
                         
                         // Save to History
+                        // Save to History
                         historyManager.saveArt(art)
-                        audioGuide.speak("This is \(art.title). \(art.description)")
+                        audioGuide.speak("This is \(art.title). \(art.description)", language: userPreferences.selectedLanguage)
                     case .failure(let error):
                         print("Error recognizing art: \(error)")
                         self.recognitionError = error
@@ -396,6 +345,7 @@ struct ContentView: View {
 struct HistoryView: View {
     @ObservedObject var historyManager: HistoryManager
     @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var userPreferences: UserPreferences
     
     var body: some View {
         NavigationView {
@@ -405,7 +355,7 @@ struct HistoryView: View {
                         .foregroundColor(.gray)
                 } else {
                     ForEach(historyManager.history) { art in
-                        NavigationLink(destination: HistoryDetailView(art: art)) {
+                        NavigationLink(destination: HistoryDetailView(art: art, language: "English").environmentObject(userPreferences)) { // Default for now, ideally persist language per item
                             HStack {
                                 if let data = art.imageData, let uiImage = UIImage(data: data) {
                                     Image(uiImage: uiImage)
@@ -444,16 +394,16 @@ struct HistoryView: View {
                     }
                 }
             }
-            .navigationTitle("History")
+            .navigationTitle(userPreferences.localized("History"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Clear") {
+                    Button(userPreferences.localized("Clear")) {
                         historyManager.clearHistory()
                     }
                     .disabled(historyManager.history.isEmpty)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
+                    Button(userPreferences.localized("Done")) {
                         presentationMode.wrappedValue.dismiss()
                     }
                 }
@@ -464,7 +414,12 @@ struct HistoryView: View {
 
 struct HistoryDetailView: View {
     let art: ArtPiece
+    let language: String
     @StateObject private var audioGuide = AudioGuide() // Local audio guide for this view
+    @EnvironmentObject var userPreferences: UserPreferences
+    @State private var harvardDetails: ArtObject?
+    @State private var isFetchingDetails = false
+    @State private var showDetailsSheet = false
     
     var shareText: String {
         var text = """
@@ -540,17 +495,36 @@ struct HistoryDetailView: View {
                 .cornerRadius(12)
                 
                 Button(action: {
-                    audioGuide.speak("This is \(art.title) by \(art.artist). \(art.description). Context: \(art.context)")
+                    audioGuide.speak("This is \(art.title) by \(art.artist). \(art.description). Context: \(art.context)", language: language)
                 }) {
                     Label("Listen Guide", systemImage: "speaker.wave.2.fill")
                         .padding()
                         .background(Color.blue.opacity(0.1))
                         .cornerRadius(8)
                 }
+                
+                // Harvard Museum "Learn More"
+                if (art.locationName?.contains("Harvard") == true || art.locationName == "Harvard Art Museums") {
+                    Button(action: fetchHarvardDetails) {
+                        HStack {
+                            if isFetchingDetails {
+                                ProgressView()
+                            } else {
+                                Text(userPreferences.localized("Learn More (Harvard API)"))
+                            }
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.red.opacity(0.8))
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                    }
+                    .padding(.top)
+                }
             }
             .padding()
         }
-        .navigationTitle("Art Details")
+        .navigationTitle(userPreferences.localized("Art Details"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -565,6 +539,87 @@ struct HistoryDetailView: View {
                 }
             }
         }
+        .sheet(isPresented: $showDetailsSheet) {
+            if let details = harvardDetails {
+                LiquidGlassView(details: details)
+            }
+        }
+        .onDisappear {
+            audioGuide.stop() // Stop audio when leaving details
+        }
+    }
+    
+    private func fetchHarvardDetails() {
+        guard !userPreferences.harvardAPIKey.isEmpty else { return }
+        isFetchingDetails = true
+        
+        let service = MuseumLookupService(apiKey: userPreferences.harvardAPIKey)
+        
+        Task {
+            do {
+                if let details = try await service.fetchArtDetails(query: art.title) {
+                    DispatchQueue.main.async {
+                        self.harvardDetails = details
+                        self.showDetailsSheet = true
+                        self.isFetchingDetails = false
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self.isFetchingDetails = false
+                        // Handle no results
+                    }
+                }
+            } catch {
+                print("Error: \(error)")
+                DispatchQueue.main.async {
+                    self.isFetchingDetails = false
+                }
+            }
+        }
+    }
+}
+
+struct LiquidGlassView: View {
+    let details: ArtObject
+    @Environment(\.presentationMode) var presentationMode
+    
+    var body: some View {
+        ZStack {
+            // Background Blur
+            Color.clear
+                .background(Material.ultraThinMaterial)
+                .edgesIgnoringSafeArea(.all)
+            
+            VStack(alignment: .leading, spacing: 20) {
+                HStack {
+                    Spacer()
+                    Button(action: { presentationMode.wrappedValue.dismiss() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.title)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                Text(details.title)
+                    .font(.largeTitle)
+                    .bold()
+                
+                if let culture = details.culture {
+                    Text(culture)
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                }
+                
+                ScrollView {
+                    Text(details.voiceReadyDescription)
+                        .font(.body)
+                        .lineSpacing(6)
+                }
+                
+                Spacer()
+            }
+            .padding()
+        }
     }
 }
 
@@ -575,7 +630,15 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             List {
-                Section(header: Text("Your Interests")) {
+                Section(header: Text(preferences.localized("Language"))) {
+                    Picker(preferences.localized("Language"), selection: $preferences.selectedLanguage) {
+                        ForEach(UserPreferences.availableLanguages, id: \.self) { language in
+                            Text(language).tag(language)
+                        }
+                    }
+                }
+                
+                Section(header: Text(preferences.localized("Your Interests"))) {
                     ForEach(UserPreferences.availableInterests, id: \.self) { interest in
                         HStack {
                             Text(interest)
@@ -592,9 +655,9 @@ struct SettingsView: View {
                     }
                 }
             }
-            .navigationTitle("Preferences")
+            .navigationTitle(preferences.localized("Preferences"))
             .toolbar {
-                Button("Done") {
+                Button(preferences.localized("Done")) {
                     presentationMode.wrappedValue.dismiss()
                 }
             }

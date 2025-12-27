@@ -9,7 +9,7 @@ import UIKit
 import Vision
 
 protocol ArtRecognizerService {
-    func recognizeArt(image: UIImage, onPartial: @escaping (ArtPiece) -> Void, onComplete: @escaping (Result<ArtPiece, Error>) -> Void)
+    func recognizeArt(image: UIImage, language: String, onPartial: @escaping (ArtPiece) -> Void, onComplete: @escaping (Result<ArtPiece, Error>) -> Void)
 }
 
 struct ArtPiece: Identifiable, Codable {
@@ -33,12 +33,12 @@ class OpenAIArtRecognizer: ArtRecognizerService {
         self.geminiService = GeminiService(apiKey: apiKey)
     }
     
-    func recognizeArt(image: UIImage, onPartial: @escaping (ArtPiece) -> Void, onComplete: @escaping (Result<ArtPiece, Error>) -> Void) {
+    func recognizeArt(image: UIImage, language: String, onPartial: @escaping (ArtPiece) -> Void, onComplete: @escaping (Result<ArtPiece, Error>) -> Void) {
         // 1. Instant Local Recognition (OCR)
         performLocalRecognition(image: image, onPartial: onPartial)
         
         // 2. Deep Gemini Analysis
-        geminiService.identifyArt(image: image, completion: onComplete)
+        geminiService.identifyArt(image: image, language: language, completion: onComplete)
     }
     
     private func performLocalRecognition(image: UIImage, onPartial: @escaping (ArtPiece) -> Void) {

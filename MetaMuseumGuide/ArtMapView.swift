@@ -15,38 +15,84 @@ struct ArtMapView: View {
         span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
     )
     
+    struct MapItem: Identifiable {
+        let id = UUID()
+        let coordinate: CLLocationCoordinate2D
+        let art: ArtPiece?
+        let museum: Museum?
+    }
+    
+    var mapItems: [MapItem] {
+        var items: [MapItem] = []
+        // Add History
+        items.append(contentsOf: historyManager.history.compactMap { art in
+            guard let lat = art.latitude, let lon = art.longitude else { return nil }
+            return MapItem(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon), art: art, museum: nil)
+        })
+        // Add Museums
+        items.append(contentsOf: MuseumData.museums.values.map { museum in
+            MapItem(coordinate: CLLocationCoordinate2D(latitude: museum.latitude, longitude: museum.longitude), art: nil, museum: museum)
+        })
+        return items
+    }
+    
+    @State private var selectedMuseum: Museum?
     var body: some View {
         ZStack {
-            Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: historyManager.history.filter { $0.latitude != nil && $0.longitude != nil }) { art in
-                MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: art.latitude!, longitude: art.longitude!)) {
-                    NavigationLink(destination: HistoryDetailView(art: art)) {
-                        VStack {
-                            if let data = art.imageData, let uiImage = UIImage(data: data) {
-                                Image(uiImage: uiImage)
+            Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: mapItems) { item in
+                MapAnnotation(coordinate: item.coordinate) {
+                    if let art = item.art {
+                        NavigationLink(destination: HistoryDetailView(art: art, language: "English")) {
+                            VStack {
+                                if let data = art.imageData, let uiImage = UIImage(data: data) {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 40, height: 40)
+                                        .clipShape(Circle())
+                                        .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                                        .shadow(radius: 3)
+                                } else {
+                                    Image(systemName: "photo.circle.fill")
+                                        .resizable()
+                                        .frame(width: 40, height: 40)
+                                        .foregroundColor(.purple)
+                                        .background(Color.white)
+                                        .clipShape(Circle())
+                                }
+                                
+                                Text(art.title)
+                                    .font(.caption)
+                                    .padding(4)
+                                    .background(.ultraThinMaterial)
+                                    .cornerRadius(4)
+                            }
+                        }
+                    } else if let museum = item.museum {
+                        Button(action: {
+                            selectedMuseum = museum
+                        }) {
+                            VStack {
+                                Image(systemName: "building.columns.circle.fill")
                                     .resizable()
-                                    .scaledToFill()
                                     .frame(width: 40, height: 40)
-                                    .clipShape(Circle())
-                                    .overlay(Circle().stroke(Color.white, lineWidth: 2))
-                                    .shadow(radius: 3)
-                            } else {
-                                Image(systemName: "photo.circle.fill")
-                                    .resizable()
-                                    .frame(width: 40, height: 40)
-                                    .foregroundColor(.purple)
+                                    .foregroundColor(.red)
                                     .background(Color.white)
                                     .clipShape(Circle())
+                                    .shadow(radius: 3)
+                                
+                                Text(museum.name)
+                                    .font(.caption)
+                                    .padding(4)
+                                    .background(.ultraThinMaterial)
+                                    .cornerRadius(4)
                             }
-                            
-                            Text(art.title)
-                                .font(.caption)
-                                .padding(4)
-                                .background(Color.black.opacity(0.7))
-                                .foregroundColor(.white)
-                                .cornerRadius(4)
                         }
                     }
                 }
+            }
+            .sheet(item: $selectedMuseum) { museum in
+                MuseumDetailView(museum: museum)
             }
             
             // Locate Me Button
