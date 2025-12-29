@@ -67,6 +67,11 @@ struct ArtOverlayView: View {
                             .cornerRadius(8)
                     }
                     
+                    // AI Chat Section
+                    AIChatView(context: "Title: \(art.title)\nArtist: \(art.artist)\nDescription: \(art.description)", audioGuide: audioGuide)
+                        .environmentObject(userPreferences)
+                        .padding(.vertical)
+                    
                     Button(userPreferences.localized("Close")) {
                         audioGuide.stop() // Stop audio on close
                         withAnimation {

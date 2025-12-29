@@ -61,11 +61,14 @@ struct ArtMapView: View {
                                         .clipShape(Circle())
                                 }
                                 
+                            
                                 Text(art.title)
                                     .font(.caption)
-                                    .padding(4)
+                                    .bold()
+                                    .padding(6)
                                     .background(.ultraThinMaterial)
-                                    .cornerRadius(4)
+                                    .cornerRadius(8)
+                                    .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                             }
                         }
                     } else if let museum = item.museum {
@@ -83,9 +86,11 @@ struct ArtMapView: View {
                                 
                                 Text(museum.name)
                                     .font(.caption)
-                                    .padding(4)
+                                    .bold()
+                                    .padding(6)
                                     .background(.ultraThinMaterial)
-                                    .cornerRadius(4)
+                                    .cornerRadius(8)
+                                    .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                             }
                         }
                     }
@@ -111,21 +116,24 @@ struct ArtMapView: View {
                         Image(systemName: "location.fill")
                             .font(.title2)
                             .padding()
-                            .background(Color.white)
+                            .background(.ultraThinMaterial)
                             .foregroundColor(.blue)
                             .clipShape(Circle())
-                            .shadow(radius: 4)
+                            .overlay(Circle().stroke(Color.white.opacity(0.5), lineWidth: 1))
+                            .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
                     }
                     .padding()
                 }
             }
         }
         .onAppear {
-            // Center map on the most recent item if available, otherwise user location
-            if let lastArt = historyManager.history.last, let lat = lastArt.latitude, let lon = lastArt.longitude {
-                region.center = CLLocationCoordinate2D(latitude: lat, longitude: lon)
-            } else if let userLoc = locationManager.lastKnownLocation {
+            // Prioritize User Location for the "Where am I?" feeling
+            if let userLoc = locationManager.lastKnownLocation {
                 region.center = userLoc.coordinate
+                region.span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+            } else if let lastArt = historyManager.history.last, let lat = lastArt.latitude, let lon = lastArt.longitude {
+                // Fallback to last art if no user location yet
+                region.center = CLLocationCoordinate2D(latitude: lat, longitude: lon)
             }
         }
         .navigationTitle("Art Map")

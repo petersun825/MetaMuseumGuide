@@ -12,13 +12,13 @@ class UserPreferences: ObservableObject {
             save()
         }
     }
-    // Gemini API Key
-    @Published var geminiAPIKey: String = "AIzaSyCbqMIUr9MhvLQGuOPUbuCAqpOzCeNQNH4" // Replace with your actual key
+    // Gemini API Key Vertex API
+    @Published var geminiAPIKey: String = "AQ.Ab8RN6JCMTbTosmJJxcoYZR5bP18UqAi9FdK0-yNEEgffz2Hsw" // Replace with your actual key
     // Harvard API Key
      @Published var harvardAPIKey: String = "96cb1943-feb9-4c02-aa9a-37a614db9dbe"
     
     // ElevenLabs API Key & Voice ID
-    @Published var elevenLabsAPIKey: String = "YOUR_ELEVENLABS_API_KEY"
+    @Published var elevenLabsAPIKey: String = "sk_50425815b30e3a91766ac807acf2c11add7319bcc68257d4"
     @Published var elevenLabsVoiceID: String = "21m00Tcm4TlvDq8ikWAM" { // Default voice "Rachel"
         didSet {
             save()

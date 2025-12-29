@@ -4,7 +4,6 @@
 //
 //  Created by Peter Sun on 12/26/25.
 //
-
 import Foundation
 
 struct ArtObject: Codable, Identifiable {
@@ -17,10 +16,42 @@ struct ArtObject: Codable, Identifiable {
     let commentary: String?
     let description: String?
     let primaryimageurl: String?
+    let url: String?
+    let classification: String?
+    let technique: String?
+    let department: String?
     
-    // Coding keys to match API response if needed, or stick to simple names if they match
-    // The API returns 'id' as 'id', 'title' as 'title', etc.
-    // Ensure optionality as API might omit fields.
+    // Rich Data Arrays
+    let images: [ImageResource]?
+    let people: [Person]?
+    let audio: [AudioResource]? // Might verify API name is "audio" or "audios"
+    
+    struct ImageResource: Codable, Identifiable {
+        let imageid: Int
+        let baseimageurl: String?
+        let idsid: Int?
+        let caption: String?
+        
+        var id: Int { imageid }
+    }
+    
+    struct Person: Codable, Identifiable {
+        let personid: Int
+        let displayname: String?
+        let role: String?
+        
+        var id: Int { personid }
+    }
+    
+    struct AudioResource: Codable, Identifiable {
+        // Based on docs and assumption, verify exact keys if possible
+        let audioid: Int? // API often uses integer IDs
+        let duration: Double?
+        let primaryurl: String?
+        let description: String?
+        
+        var id: Int { audioid ?? Int.random(in: 0...10000) }
+    }
 }
 
 // Wrapper for API response structure

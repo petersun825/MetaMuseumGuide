@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs to record what you say in order to communicate with the AI</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>This app needs speech to allow speaking with the AI</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -16,29 +20,10 @@
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>ms-3799069870396674</string>
-			</array>
-		</dict>
-	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>MetaAppID</key>
-	<string>3799069870396674</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>This app needs Bluetooth to connect to your Meta Glasses.</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>This app needs Bluetooth to connect to your Meta Glasses.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>We need camera access to identify art and provide a live view.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We use your location to determine which museum you are visiting.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -48,8 +33,6 @@
 	<true/>
 	<key>UILaunchScreen</key>
 	<dict/>
-	<key>UILaunchStoryboardName</key>
-	<string>I</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -66,6 +49,29 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>This app needs Bluetooth to connect to your Meta Glasses.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>This app needs Bluetooth to connect to your Meta Glasses.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We use your location to determine which museum you are visiting.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need camera access to identify art and provide a live view.</string>
+	<key>MetaAppID</key>
+	<string>3799069870396674</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>ms-3799069870396674</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

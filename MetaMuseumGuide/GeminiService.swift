@@ -4,7 +4,6 @@
 //
 //  Created by Peter Sun on 12/7/25.
 //
-
 import Foundation
 import UIKit
 
@@ -17,6 +16,134 @@ class GeminiService {
     
     init(apiKey: String) {
         self.apiKey = apiKey
+    }
+    
+    // MARK: - Podcast Script Generation (Moved to top/init for visibility)
+    func createVisitSummary(artworks: [ArtPiece], preferences: UserPreferences, completion: @escaping (Result<String, Error>) -> Void) {
+        let urlString = "https://generativelanguage.googleapis.com/v1beta/models/\(model):generateContent?key=\(apiKey)"
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NSError(domain: "GeminiService", code: -2, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
+            return
+        }
+        
+        let artList = artworks.map { "\($0.title) by \($0.artist)" }.joined(separator: ", ")
+        let interests = preferences.interests.joined(separator: ", ")
+        
+        // Using concatenated strings to avoid copy-paste whitespace issues
+        var prompt = "You are a charismatic, knowledgeable art podcast host. You are wrapping up a special episode about the user's visit to the museum.\n\n"
+        prompt += "The listener just saw these pieces: \(artList).\n"
+        prompt += "The listener is interested in: \(interests).\n\n"
+        prompt += "Write a short, engaging 1-minute podcast script (approx 130-150 words) summarizing their visit.\n"
+        prompt += "- Be enthusiastic and personal.\n"
+        prompt += "- Mention 2-3 specific pieces they saw and why they are cool, relating them to their interests if possible.\n"
+        prompt += "- End with a thought-provoking sign-off.\n"
+        prompt += "- Do NOT include sound effects cues like [Intro Music]. Just the spoken text."
+        
+        let body: [String: Any] = [
+            "contents": [
+                [
+                    "parts": [
+                        ["text": prompt]
+                    ]
+                ]
+            ]
+        ]
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        
+        print("GeminiService: Generating podcast script...")
+        
+        session.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "GeminiService", code: -3, userInfo: [NSLocalizedDescriptionKey: "No data"])))
+                return
+            }
+            
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let candidates = json["candidates"] as? [[String: Any]],
+                   let content = candidates.first?["content"] as? [String: Any],
+                   let parts = content["parts"] as? [[String: Any]],
+                   let text = parts.first?["text"] as? String {
+                    
+                    print("GeminiService: Script generated successfully.")
+                    completion(.success(text))
+                } else {
+                    completion(.failure(NSError(domain: "GeminiService", code: -6, userInfo: [NSLocalizedDescriptionKey: "Invalid response format"])))
+                }
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+    // MARK: - Chat (Q&A)
+    func chatAboutArt(history: [String], question: String, context: String, completion: @escaping (Result<String, Error>) -> Void) {
+        let urlString = "https://generativelanguage.googleapis.com/v1beta/models/\(model):generateContent?key=\(apiKey)"
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NSError(domain: "GeminiService", code: -2, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
+            return
+        }
+        
+        let prompt = """
+        You are an expert art historian guide in a museum app.
+        
+        Context about the artwork currently being viewed:
+        \(context)
+        
+        The user asks: "\(question)"
+        
+        Answer the user's question concisely (2-3 sentences max) and conversationally.
+        If the question is unrelated to art, politely steer them back to the artwork.
+        """
+        
+        let body: [String: Any] = [
+            "contents": [
+                [
+                    "parts": [
+                        ["text": prompt]
+                    ]
+                ]
+            ]
+        ]
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        
+        session.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "GeminiService", code: -3, userInfo: [NSLocalizedDescriptionKey: "No data"])))
+                return
+            }
+            
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let candidates = json["candidates"] as? [[String: Any]],
+                   let content = candidates.first?["content"] as? [String: Any],
+                   let parts = content["parts"] as? [[String: Any]],
+                   let text = parts.first?["text"] as? String {
+                    completion(.success(text))
+                } else {
+                    completion(.failure(NSError(domain: "GeminiService", code: -6, userInfo: [NSLocalizedDescriptionKey: "Invalid response format"])))
+                }
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
     }
     
     // MARK: - Vision (Identify Art)
